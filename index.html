@@ -282,7 +282,8 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; display: flex; flex-d
 
       <form id="note-form" novalidate>
         <section class="block">
-          <div class="block-h"><h2>회원 정보</h2><p class="hint">휴대폰 번호와 출생연도로 내 기록을 찾아요. 휴대폰을 바꿔도 기록이 이어져요.</p></div>
+          <div class="block-h"><h2>회원 정보</h2><p class="hint">이름과 휴대폰 번호로 회원을 구분해요. 휴대폰을 바꿔도 기록이 이어져요.</p></div>
+          <div class="field"><label for="f-name">이름</label><div class="inp"><input id="f-name" autocomplete="name" maxlength="30" placeholder="예: 김영희"></div><p class="err" hidden></p></div>
           <div class="field"><label for="f-phone">휴대폰 번호</label><div class="inp"><input id="f-phone" type="tel" inputmode="numeric" autocomplete="tel" maxlength="13" placeholder="010-0000-0000"></div><p class="err" hidden></p></div>
           <div class="grid2">
             <div class="field"><label for="f-birth">출생연도</label><div class="inp"><input id="f-birth" inputmode="numeric" autocomplete="bday-year" maxlength="4" placeholder="예: 1985"><span class="unit">년</span></div><p class="err" hidden></p></div>
@@ -400,7 +401,7 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; display: flex; flex-d
             <label class="consent" for="f-consent"><input type="checkbox" id="f-consent"><span><b>[필수]</b> 체성분·체력 기록을 센터에 저장하는 데 동의해요</span></label>
             <details class="consent-more"><summary>저장되는 내용 보기</summary>
               <ul>
-                <li>저장 항목: 휴대폰 번호, 출생연도, 성별, 키, 인바디 수치, 체력 체크, 생활 습관 답변, 결과 요약</li>
+                <li>저장 항목: 이름, 휴대폰 번호, 출생연도, 성별, 키, 인바디 수치, 체력 체크, 생활 습관 답변, 결과 요약</li>
                 <li>목적: 측정 기록 비교와 운동·식사 상담</li>
                 <li>보관: 삭제를 요청할 때까지, 최대 마지막 측정 후 2년</li>
                 <li>센터 담당자만 볼 수 있고, 삭제는 데스크에 요청하면 돼요.</li>
@@ -973,10 +974,15 @@ var PC = (function () {
 
   function readForm() {
     var x = { fit: {} }, firstBad = null;
+    var nameEl = document.getElementById('f-name'), nm = nameEl.value.replace(/\s+/g, ' ').trim();
+    var nmsg = !nm ? '이름을 입력해주세요.' : nm.length < 2 ? '이름을 다시 확인해주세요.' : null;
+    setErr(nameEl.closest('.field'), nmsg);
+    if (nmsg) firstBad = nameEl;
+    x.name = nm;
     var phoneEl = document.getElementById('f-phone'), pd = phoneEl.value.replace(/\D/g, '');
     var pmsg = !pd ? '휴대폰 번호를 입력해주세요.' : /^01[016789]\d{7,8}$/.test(pd) ? null : '휴대폰 번호를 다시 확인해주세요. 예: 010-1234-5678';
     setErr(phoneEl.closest('.field'), pmsg);
-    if (pmsg) firstBad = phoneEl;
+    if (pmsg && !firstBad) firstBad = phoneEl;
     x.phone = pd;
     SPEC.forEach(function (s) {
       var el = document.getElementById(s.id), wrap = el.closest('.field');
@@ -1073,7 +1079,7 @@ var PC = (function () {
       else if (opts.saved.off) html += '<p class="saved warn">센터 기록 연결 전이라 이 휴대폰에만 저장했어요.</p>';
       else html += '<p class="saved warn">센터 저장에 실패해서 이 휴대폰에만 저장했어요. 인터넷 연결을 확인하고 ‘수치 다시 입력’에서 결과 보기를 한 번 더 눌러주세요.</p>';
     }
-    html += '<div class="hero"><span class="eyebrow">이번 측정 결과 · 목표 ' + esc(r.goalLabel) + '</span><h2 class="type">' + esc(r.T.name) + '</h2><span class="code">' + esc(r.T.code) + '</span><p class="line">' + esc(r.T.line) + '</p>' + (r.goalNote ? '<p class="note">' + esc(r.goalNote) + '</p>' : '') + '</div>';
+    html += '<div class="hero"><span class="eyebrow">' + (opts.name ? esc(opts.name) + ' 회원님 · ' : '이번 측정 결과 · ') + '목표 ' + esc(r.goalLabel) + '</span><h2 class="type">' + esc(r.T.name) + '</h2><span class="code">' + esc(r.T.code) + '</span><p class="line">' + esc(r.T.line) + '</p>' + (r.goalNote ? '<p class="note">' + esc(r.goalNote) + '</p>' : '') + '</div>';
     if (r.condMissing.length) html += '<p class="caution"><b>측정 조건 확인</b> · ' + esc(r.condMissing.join(', ')) + ' 조건이 빠졌어요. 수치가 평소와 다를 수 있으니 다음엔 맞춰서 재보세요.</p>';
 
     html += '<section class="rsec"><div class="rsec-h"><h3>핵심 지표</h3>' + (r.prev ? '<span class="sub">지난 측정 ' + md(r.prev.date) + ' (' + r.prev.days + '일 전) 대비</span>' : '<span class="sub">파란 띠가 표준 범위</span>') + '</div><ul class="metrics">' + r.metrics.map(metricHtml).join('') + '</ul></section>';
@@ -1202,15 +1208,15 @@ var PC = (function () {
     e.preventDefault();
     var x = readForm();
     if (!x) return;
-    var phone = x.phone; delete x.phone;
-    var keepProfile = function () { saveProfile({ phone: phone, birthYear: x.birthYear, branch: x.branch }); };
+    var phone = x.phone, name = x.name; delete x.phone; delete x.name;
+    var keepProfile = function () { saveProfile({ name: name, phone: phone, birthYear: x.birthYear }); };
     var base = serverRecs || sortedRecs();
     var prelim = PC.analyze(x, prevOf(base, x.date));
     var local = keepLocal(x);
-    if (!serverOn()) { keepProfile(); render(PC.analyze(x, prevOf(local, x.date)), { history: local, branch: x.branch, saved: { off: true } }); refreshRecords(); return; }
+    if (!serverOn()) { keepProfile(); render(PC.analyze(x, prevOf(local, x.date)), { history: local, branch: x.branch, name: name, saved: { off: true } }); refreshRecords(); return; }
     setBusy(true);
     serverCall({
-      action: 'save', branch: x.branch, phone: phone, birthYear: x.birthYear, consentAt: new Date().toISOString(),
+      action: 'save', branch: x.branch, name: name, phone: phone, birthYear: x.birthYear, consentAt: new Date().toISOString(),
       record: { date: x.date, inputs: x },
       summary: { type: prelim.T.name, kcal: prelim.meal.kcal, protein: prelim.meal.protein, focus: prelim.exercise.focusName, labels: labelsOf(x) }
     }).then(function (resp) {
@@ -1219,7 +1225,7 @@ var PC = (function () {
         keepProfile();
         serverRecs = resp.records || [];
         saveRecs(serverRecs);
-        render(PC.analyze(x, prevOf(serverRecs, x.date)), { history: serverRecs, branch: x.branch, saved: { ok: true, count: resp.count || serverRecs.length } });
+        render(PC.analyze(x, prevOf(serverRecs, x.date)), { history: serverRecs, branch: x.branch, name: name, saved: { ok: true, count: resp.count || serverRecs.length } });
       } else if (resp && resp.error === 'mismatch') {
         var el = document.getElementById('f-phone');
         setErr(el.closest('.field'), '이 번호는 다른 출생연도로 등록돼 있어요. 출생연도를 확인하거나 데스크에 문의해주세요.');
@@ -1227,13 +1233,13 @@ var PC = (function () {
         return;
       } else {
         keepProfile();
-        render(PC.analyze(x, prevOf(local, x.date)), { history: local, branch: x.branch, saved: { ok: false } });
+        render(PC.analyze(x, prevOf(local, x.date)), { history: local, branch: x.branch, name: name, saved: { ok: false } });
       }
       refreshRecords();
     }).catch(function () {
       setBusy(false);
       keepProfile();
-      render(PC.analyze(x, prevOf(local, x.date)), { history: local, branch: x.branch, saved: { ok: false } });
+      render(PC.analyze(x, prevOf(local, x.date)), { history: local, branch: x.branch, name: name, saved: { ok: false } });
       refreshRecords();
     });
   });
@@ -1272,9 +1278,10 @@ var PC = (function () {
       if (resp && resp.ok) {
         serverRecs = resp.records || [];
         if (serverRecs.length) saveRecs(serverRecs);
+        if (resp.name && !document.getElementById('f-name').value.trim()) document.getElementById('f-name').value = resp.name;
         fillFrom(serverRecs);
         msg.textContent = serverRecs.length ? '지난 측정 ' + serverRecs.length + '회를 불러왔어요 · 최근 ' + md(serverRecs[serverRecs.length - 1].date) : '아직 저장된 기록이 없어요. 오늘이 첫 측정이에요.';
-        var pp = loadProfile() || {}; saveProfile({ phone: pd, birthYear: by, branch: pp.branch });
+        saveProfile({ name: document.getElementById('f-name').value.trim() || resp.name || '', phone: pd, birthYear: by });
         refreshLast(); refreshRecords();
       } else if (resp && resp.error === 'mismatch') {
         msg.textContent = '이 번호는 다른 출생연도로 등록돼 있어요. 데스크에 문의해주세요.';
@@ -1321,6 +1328,7 @@ var PC = (function () {
     setBranch();
     var p = loadProfile();
     if (!p || !p.phone) return;
+    if (p.name) document.getElementById('f-name').value = p.name;
     document.getElementById('f-phone').value = fmtPhone(p.phone);
     if (p.birthYear) document.getElementById('f-birth').value = p.birthYear;
     fillFrom(sortedRecs());
