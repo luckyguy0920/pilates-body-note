@@ -265,25 +265,13 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; display: flex; flex-d
         </section>
 
         <section class="block">
-          <div class="block-h"><h2>결과지 수치</h2><p class="hint">결과지에 적힌 숫자를 그대로 넣어주세요.</p></div>
+          <div class="block-h"><h2>결과지 숫자 4개</h2><p class="hint">결과지에서 이 4칸만 옮겨 적으면 돼요. 체지방량과 기초대사량은 인바디와 같은 방식으로 자동 계산해요.</p></div>
           <div class="grid2">
-            <div class="field"><label for="f-weight">체중</label><div class="inp"><input id="f-weight" inputmode="decimal" autocomplete="off" placeholder="예: 58.4"><span class="unit">kg</span></div><p class="err" hidden></p></div>
+            <div class="field"><label for="f-weight">체중</label><div class="inp"><input id="f-weight" inputmode="decimal" autocomplete="off" placeholder="예: 58.4"><span class="unit">kg</span></div><p class="fhint">체성분 분석 칸</p><p class="err" hidden></p></div>
             <div class="field"><label for="f-smm">골격근량</label><div class="inp"><input id="f-smm" inputmode="decimal" autocomplete="off" placeholder="예: 21.3"><span class="unit">kg</span></div><p class="fhint">골격근·지방 분석 칸</p><p class="err" hidden></p></div>
             <div class="field"><label for="f-pbf">체지방률</label><div class="inp"><input id="f-pbf" inputmode="decimal" autocomplete="off" placeholder="예: 29.8"><span class="unit">%</span></div><p class="fhint">비만 분석 칸</p><p class="err" hidden></p></div>
+            <div class="field"><label for="f-mc">근육조절</label><div class="inp"><span class="sign">+</span><input id="f-mc" inputmode="decimal" autocomplete="off" placeholder="예: 1.2"><span class="unit">kg</span></div><p class="fhint">체중조절 칸 · 0이면 0</p><p class="err" hidden></p></div>
             <div class="field"><label for="f-vfl">내장지방 레벨 <span class="opt">선택</span></label><div class="inp"><input id="f-vfl" inputmode="numeric" autocomplete="off" placeholder="예: 7"><span class="unit">레벨</span></div><p class="err" hidden></p></div>
-            <div class="field"><label for="f-bmr">기초대사량 <span class="opt">선택</span></label><div class="inp"><input id="f-bmr" inputmode="numeric" autocomplete="off" placeholder="예: 1280"><span class="unit">kcal</span></div><p class="err" hidden></p></div>
-          </div>
-          <div class="wc">
-            <div class="block-h"><h3 class="wc-h">체중조절 칸 <span class="opt">있으면 꼭 넣어주세요</span></h3><p class="hint">판정이 결과지와 똑같아지고, 4주 목표가 숫자로 나와요.</p></div>
-            <div class="grid2">
-              <div class="field"><label for="f-mc">근육조절</label><div class="inp"><span class="sign">+</span><input id="f-mc" inputmode="decimal" autocomplete="off" placeholder="예: 1.2"><span class="unit">kg</span></div><p class="fhint">결과지에 0이면 0</p><p class="err" hidden></p></div>
-              <div class="field"><label for="f-fc">지방조절</label><div class="inp"><input id="f-fc" inputmode="decimal" autocomplete="off" placeholder="예: 5.3"><span class="unit">kg</span></div>
-                <div class="seg-opts mini" style="--n:2" role="radiogroup" aria-label="지방조절 부호">
-                  <label><input type="radio" name="fcsign" value="-1" id="fc-minus" checked><span>− 빼기</span></label>
-                  <label><input type="radio" name="fcsign" value="1" id="fc-plus"><span>+ 늘리기</span></label>
-                </div>
-                <p class="err" hidden></p></div>
-            </div>
           </div>
         </section>
 
@@ -388,13 +376,13 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; display: flex; flex-d
       <div class="criteria-body" id="criteria-body">
         <h4>지표 판정</h4>
         <ul>
-          <li>근육 판정: 결과지 체중조절의 근육조절이 0보다 크면 부족, 0이면 표준 이상. 근육조절을 안 넣었을 때만 아래 추정 표준으로 판정.</li>
-          <li>체지방 판정: 결과지 지방조절이 0보다 작으면 과다(체지방률이 표준 상한 +5%p 초과면 높음, 아니면 약간 높음), 0보다 크면 낮음, 0이면 표준. 지방조절을 안 넣었을 때만 체지방률 범위로 판정.</li>
+          <li>근육 판정: 결과지 체중조절의 근육조절이 0보다 크면 부족, 0이면 표준 이상 (인바디 판정과 같음). 표준 이상 중 아래 추정 표준의 110% 초과면 발달.</li>
+          <li>체지방 판정: 체지방률이 인바디 표준범위(여성 18~28%, 남성 10~20%) 안이면 표준, 상한 +5%p까지 약간 높음, 그 이상 높음, 하한 미만 낮음. 체지방량 = 체중 × 체지방률.</li>
           <li>골격근량 표준(추정) = 표준체중 × (1 − 이상 체지방률) × 골격근 비율. 표준체중은 여성 21 × 키(m)², 남성 22 × 키(m)². 이상 체지방률 여성 23%, 남성 15%. 골격근 비율 여성 0.54, 남성 0.56. 표준의 90% 미만 부족, 110% 초과 발달.</li>
           <li>체지방률 표준: 여성 18~28%, 남성 10~20%. 상한 +5%p까지 약간 높음, 그 이상 높음, 하한 미만 낮음.</li>
           <li>BMI 18.5~24.9 표준, 25 이상 높음.</li>
           <li>내장지방 레벨 1~9 표준, 10~14 높음, 15 이상 매우 높음.</li>
-          <li>기초대사량은 결과지 값을 쓰고, 없으면 370 + 21.6 × 제지방량(kg)으로 계산.</li>
+          <li>기초대사량 = 370 + 21.6 × 제지방량(kg). 인바디 결과지와 같은 공식이라 따로 입력하지 않음.</li>
         </ul>
         <h4>체형 유형</h4>
         <div class="tbl-wrap">
@@ -416,7 +404,7 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; display: flex; flex-d
           <li>감량일 때도 기초대사량(여성 최소 1,200, 남성 최소 1,500kcal) 아래로는 내리지 않음. 목표가 유지면 감량 폭은 최대 −300kcal.</li>
           <li>단백질은 제지방량 × 2.2g을 넘지 않게 제한, 5g 단위.</li>
           <li>18세 미만은 칼로리 목표를 내지 않음.</li>
-          <li>4주 목표: 근육은 근육조절 값 안에서 여성 최대 +0.5kg, 남성 최대 +0.8kg. 체지방은 지방조절 값 안에서 여성 최대 −2.0kg, 남성 최대 −2.5kg (늘려야 하면 최대 +0.5kg). 18세 미만은 체지방 감량 목표 없음.</li>
+          <li>4주 목표: 근육은 근육조절 값 안에서 여성 최대 +0.5kg, 남성 최대 +0.8kg. 체지방은 이상 체지방률(여성 23%, 남성 15%)까지 줄일 양 안에서 여성 최대 −2.0kg, 남성 최대 −2.5kg, 체지방이 낮으면 표준 하한까지 최대 +0.5kg. 18세 미만은 체지방 감량 목표 없음.</li>
           <li>집중 부위(자세 고민 우선순위): 오래 앉으면 허리가 아픔 → 몸통(코어), 거북목·라운드숄더 → 상체·등 펴기, 골반·어깨 높이가 다름 → 좌우 균형, 하체가 쉽게 붓거나 지침 → 하체·엉덩이. 고르지 않으면 유형별 기본값.</li>
           <li>통증 부위를 고르면 해당 동작을 부담이 적은 버전으로 바꿈.</li>
         </ul>
@@ -723,12 +711,17 @@ var PC = (function () {
     if (hasMc) gm = x.mc > 0 ? Math.min(x.mc, S.muscle4w) : 0;
     else gm = muscle === 'low' ? S.muscle4w : 0;
     if (hasFc) gf = x.fc < 0 ? -Math.min(-x.fc, S.fat4w) : x.fc > 0 ? Math.min(x.fc, 0.5) : 0;
-    else gf = fat === 'high' ? -S.fat4w : fat === 'over' ? -1.0 : fat === 'low' ? 0.5 : 0;
+    else {
+      // 지방조절 칸 없이 계산: 과다면 이상 체지방률(여 23%, 남 15%)까지 줄일 양, 낮으면 표준 하한까지 늘릴 양
+      var fatToIdeal = bfm - ffm * (S.idealPbf / 100) / (1 - S.idealPbf / 100);
+      var fatToLow = ffm * (pl / 100) / (1 - pl / 100) - bfm;
+      gf = fatHigh ? -Math.min(Math.max(fatToIdeal, 0.5), S.fat4w) : fat === 'low' ? Math.min(Math.max(fatToLow, 0.2), 0.5) : 0;
+    }
     if (minor && gf < 0) gf = 0;
     var goal4w = {
       muscle: r1(gm), fat: r1(gf), weight: r1(gm + gf),
       fromSheet: hasMc || hasFc,
-      sheetText: (hasMc || hasFc) ? '결과지 체중조절 ' + [hasMc ? '근육 ' + signed(x.mc) : null, hasFc ? '지방 ' + signed(x.fc) : null].filter(Boolean).join(', ') : null,
+      sheetText: (hasMc || hasFc) ? '결과지 근육조절 ' + [hasMc ? signed(x.mc) : null].filter(Boolean).join('') + (hasFc ? ' · 지방조절 ' + signed(x.fc) : '') : null,
       muscleTarget: r1(x.smm + gm), fatTarget: r1(bfm + gf)
     };
 
@@ -829,7 +822,7 @@ var PC = (function () {
     });
     metrics.push({
       key: 'bmr', label: '기초대사량', value: bmr, unit: 'kcal', status: null, statusText: null, tone: null, bar: null,
-      meta: bmrEst ? '결과지 값이 없어 체지방률로 계산했어요' : '숨만 쉬어도 쓰는 하루 에너지'
+      meta: bmrEst ? '인바디와 같은 공식(370 + 21.6 × 제지방량)으로 계산' : '숨만 쉬어도 쓰는 하루 에너지'
     });
 
     var prevInfo = null;
@@ -891,9 +884,7 @@ var PC = (function () {
     { id: 'f-smm', key: 'smm', label: '골격근량', min: 8, max: 70, req: true },
     { id: 'f-pbf', key: 'pbf', label: '체지방률', min: 3, max: 65, req: true },
     { id: 'f-vfl', key: 'vfl', label: '내장지방 레벨', min: 1, max: 20, req: false },
-    { id: 'f-bmr', key: 'bmr', label: '기초대사량', min: 700, max: 3500, req: false },
-    { id: 'f-mc', key: 'mc', label: '근육조절', min: 0, max: 30, req: false },
-    { id: 'f-fc', key: 'fc', label: '지방조절', min: 0, max: 60, req: false, signed: true },
+    { id: 'f-mc', key: 'mc', label: '근육조절', min: 0, max: 30, req: true },
     { id: 'f-sts', key: 'sts', fit: true, label: '앉았다 일어서기', min: 0, max: 60, req: false },
     { id: 'f-balL', key: 'balL', fit: true, label: '왼발 서기', min: 0, max: 45, req: false },
     { id: 'f-balR', key: 'balR', fit: true, label: '오른발 서기', min: 0, max: 45, req: false }
@@ -981,9 +972,8 @@ var PC = (function () {
       var sub = v === 0 ? what + ' ' + now.toFixed(1) + 'kg 지키기' : what + ' ' + now.toFixed(1) + ' → ' + target.toFixed(1) + 'kg';
       return '<div class="fig"><b>' + big + '</b><span>' + esc(sub) + '</span></div>';
     }
-    var note = !g.fromSheet ? '결과지 체중조절 칸을 넣으면 결과지와 같은 기준으로 잡아드려요.'
-      : (g.muscle === 0 && g.fat === 0) ? '결과지 체중조절이 모두 0이에요. 지금 상태를 지키는 게 목표예요.'
-      : esc(g.sheetText) + ' 중 첫 4주분이에요.';
+    var note = (g.muscle === 0 && g.fat === 0) ? '근육도 체지방도 표준이라 지금 상태를 지키는 게 목표예요.'
+      : '근육은 결과지 근육조절, 체지방은 체지방률로 계산한 양 중에서 4주 동안 무리 없이 갈 수 있는 만큼이에요.';
     return '<section class="rsec"><div class="rsec-h"><h3>4주 목표</h3><span class="sub">' + mdw(nextDate) + '까지</span></div><div class="goal">' +
       '<div class="figs">' + fig(g.muscle, '골격근', g.muscleTarget - g.muscle, g.muscleTarget) + fig(g.fat, '체지방', g.fatTarget - g.fat, g.fatTarget) + '</div>' +
       '<p class="rx-sub">' + note + '</p>' +
@@ -1118,7 +1108,7 @@ var PC = (function () {
 
   document.getElementById('btn-example').addEventListener('click', function () {
     var d = today();
-    var x = { sex: 'F', age: 41, height: 161, weight: 62.8, smm: 21.0, pbf: 33.6, vfl: 9, bmr: 1265, mc: 1.6, fc: -5.8, fit: { sts: 16, balL: 14, balR: 34 }, habits: ['lateNight', 'sweetDrink'], posture: ['neckShoulder'], goal: 'lose', activity: 'low', sleep: '6', cautions: ['wrist'], cond: ['fast', 'preex', 'toilet'], date: d };
+    var x = { sex: 'F', age: 41, height: 161, weight: 62.8, smm: 21.0, pbf: 33.6, vfl: 9, mc: 1.6, fit: { sts: 16, balL: 14, balR: 34 }, habits: ['lateNight', 'sweetDrink'], posture: ['neckShoulder'], goal: 'lose', activity: 'low', sleep: '6', cautions: ['wrist'], cond: ['fast', 'preex', 'toilet'], date: d };
     var hist = [
       { date: shift(d, -84), inputs: { weight: 65.2, smm: 20.1, pbf: 37.2 } },
       { date: shift(d, -56), inputs: { weight: 64.6, smm: 20.3, pbf: 36.1 } },
@@ -1152,17 +1142,13 @@ var PC = (function () {
     (x.cautions || []).forEach(function (c) { var el = form.querySelector('input[name="caution"][value="' + c + '"]'); if (el) el.checked = true; });
     if (x.age) document.getElementById('f-age').value = x.age;
     if (x.height) document.getElementById('f-height').value = x.height;
-    [['f-weight', 'weight'], ['f-smm', 'smm'], ['f-pbf', 'pbf'], ['f-vfl', 'vfl'], ['f-bmr', 'bmr']].forEach(function (p) {
+    [['f-weight', 'weight'], ['f-smm', 'smm'], ['f-pbf', 'pbf'], ['f-vfl', 'vfl']].forEach(function (p) {
       if (x[p[1]] != null) document.getElementById(p[0]).placeholder = '지난번 ' + x[p[1]];
     });
     (x.posture || []).forEach(function (c) { var el = form.querySelector('input[name="posture"][value="' + c + '"]'); if (el) el.checked = true; });
     (x.habits || []).forEach(function (c) { var el = form.querySelector('input[name="habit"][value="' + c + '"]'); if (el) el.checked = true; });
     if (x.fit) Object.keys(x.fit).forEach(function (k) { var el = document.getElementById('f-' + k); if (el) el.placeholder = '지난번 ' + x.fit[k]; });
     if (typeof x.mc === 'number') document.getElementById('f-mc').placeholder = '지난번 ' + x.mc;
-    if (typeof x.fc === 'number') {
-      document.getElementById('f-fc').placeholder = '지난번 ' + Math.abs(x.fc);
-      document.getElementById(x.fc > 0 ? 'fc-plus' : 'fc-minus').checked = true;
-    }
   }
 
   function refreshRecords() {
