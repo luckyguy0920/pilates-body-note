@@ -919,6 +919,7 @@ var PC = (function () {
   var serverRecs = null;
   var BRANCH_CODES = { songjeong: '송정', guyeong: '구영', daldong: '달동' };
   // 지점은 QR 주소로 정해요. 주소 끝 ?b= 가 없는 기존 QR은 송정점이에요.
+  // 송정점 QR은 이미 출력해 배치했으니, 기본 주소(…/pilates-body-note/)와 '없으면 송정' 규칙은 바꾸지 마세요.
   var URL_BRANCH = (function () { try { return BRANCH_CODES[new URLSearchParams(location.search).get('b')] || '송정'; } catch (e) { return '송정'; } })();
   var form = document.getElementById('note-form');
   var formView = document.getElementById('form-view');
