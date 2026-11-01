@@ -15,6 +15,8 @@
  * 같은 날 다시 저장하면 그날 기록을 새 값으로 바꿉니다(하루 1행).
  */
 
+// 기록할 구글 시트 (필라테스클리닉 체성분 기록). 시트에 붙여 쓰면 비워 둬도 돼요.
+var SHEET_ID = '1Rc0BQUS9n1NflhZtuskyCxmXcU_0wPFymYEUvS5EkXs';
 var SHEET_RECORDS = '측정기록';
 var SHEET_MEMBERS = '회원';
 var MAX_RETURN = 24;
@@ -35,6 +37,7 @@ var MEMBER_HEADERS = [
 // 열 번호(1부터)를 제목으로 찾기
 var RC = col_(RECORD_HEADERS);
 var MC = col_(MEMBER_HEADERS);
+function book_() { return SHEET_ID ? SpreadsheetApp.openById(SHEET_ID) : SpreadsheetApp.getActiveSpreadsheet(); }
 function col_(h) { var o = {}; h.forEach(function (n, i) { o[n] = i + 1; }); return o; }
 
 function doGet() {
@@ -58,7 +61,7 @@ function handle_(body) {
     if (!phone) return { ok: false, error: 'phone' };
     if (!(by >= 1900 && by <= 2100)) return { ok: false, error: 'birthYear' };
 
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var ss = book_();
     var rec = ensureSheet_(ss, SHEET_RECORDS, RECORD_HEADERS, [RC['측정일'], RC['휴대폰 번호']]);
     var mem = ensureSheet_(ss, SHEET_MEMBERS, MEMBER_HEADERS, [MC['휴대폰 번호'], MC['첫 측정일'], MC['최근 측정일']]);
     var member = findMember_(mem, phone);
@@ -194,7 +197,7 @@ function addSampleRecord() {
 
 // 예시 회원 기록을 지웁니다.
 function removeSampleRecord() {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = book_();
   [[SHEET_RECORDS, RC['휴대폰 번호']], [SHEET_MEMBERS, MC['휴대폰 번호']]].forEach(function (t) {
     var sh = ss.getSheetByName(t[0]);
     if (!sh) return;
