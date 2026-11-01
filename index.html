@@ -268,15 +268,6 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; display: flex; flex-d
             <div class="field"><label for="f-height">키</label><div class="inp"><input id="f-height" inputmode="decimal" autocomplete="off" placeholder="예: 162.5"><span class="unit">cm</span></div><p class="err" hidden></p></div>
           </div>
           <div class="loadrow"><button type="button" class="ghost" id="btn-load">지난 기록 불러오기</button><span class="sub" id="load-msg" aria-live="polite">두 번째 측정부터 누르면 지난 답이 채워져요</span></div>
-          <fieldset class="field" data-group="branch">
-            <legend>측정한 지점</legend>
-            <div class="seg-opts" style="--n:3">
-              <label><input type="radio" name="branch" value="송정" id="br-songjeong"><span>송정점</span></label>
-              <label><input type="radio" name="branch" value="구영" id="br-guyeong"><span>구영점</span></label>
-              <label><input type="radio" name="branch" value="달동" id="br-daldong"><span>달동점</span></label>
-            </div>
-            <p class="err" hidden></p>
-          </fieldset>
           <fieldset class="field" data-group="sex">
             <legend>성별</legend>
             <div class="seg-opts" style="--n:2">
@@ -906,7 +897,8 @@ var PC = (function () {
   var THIS_YEAR = new Date().getFullYear();
   var serverRecs = null;
   var BRANCH_CODES = { songjeong: '송정', guyeong: '구영', daldong: '달동' };
-  var URL_BRANCH = (function () { try { return BRANCH_CODES[new URLSearchParams(location.search).get('b')] || null; } catch (e) { return null; } })();
+  // 지점은 QR 주소로 정해요. 주소 끝 ?b= 가 없는 기존 QR은 송정점이에요.
+  var URL_BRANCH = (function () { try { return BRANCH_CODES[new URLSearchParams(location.search).get('b')] || '송정'; } catch (e) { return '송정'; } })();
   var form = document.getElementById('note-form');
   var formView = document.getElementById('form-view');
   var resultView = document.getElementById('result-view');
@@ -947,7 +939,7 @@ var PC = (function () {
     { id: 'f-balL', key: 'balL', fit: true, label: '왼발 서기', min: 0, max: 45, req: false },
     { id: 'f-balR', key: 'balR', fit: true, label: '오른발 서기', min: 0, max: 45, req: false }
   ];
-  var GROUPS = [['branch', '지점'], ['sex', '성별'], ['goal', '목표'], ['activity', '활동량'], ['sleep', '수면 시간']];
+  var GROUPS = [['sex', '성별'], ['goal', '목표'], ['activity', '활동량'], ['sleep', '수면 시간']];
 
   function setErr(wrap, msg) {
     var e = wrap.querySelector('.err');
@@ -1007,6 +999,7 @@ var PC = (function () {
     x.cautions = checks('caution');
     x.cond = checks('cond');
     x.age = THIS_YEAR - x.birthYear;
+    x.branch = URL_BRANCH;
     x.date = today();
     return x;
   }
@@ -1299,10 +1292,8 @@ var PC = (function () {
   }
 
   function setBranch() {
-    var p = loadProfile() || {}, b = URL_BRANCH || p.branch;
-    var el = b ? form.querySelector('input[name="branch"][value="' + b + '"]') : null;
-    if (el) el.checked = true;
-    if (URL_BRANCH) { var c = document.getElementById('branch-chip'); c.textContent = URL_BRANCH + '점'; c.hidden = false; }
+    var c = document.getElementById('branch-chip');
+    c.textContent = URL_BRANCH + '점'; c.hidden = false;
   }
   function prefill() {
     setBranch();
